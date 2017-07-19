@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Elizabeth's Portfolio, Experiments in Data Science">
+
+
+        <title>Predicting Interest in Manhattan Rental Listings // Elizabeth's Portfolio // Experiments in Data Science</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./theme/css/pure.css">
+    <link rel="stylesheet" href="./theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="pure-g-r" id="layout">
+        <div class="sidebar pure-u">
+            <div class="cover-img" style="background-image: url('https://static.pexels.com/photos/205324/pexels-photo-205324.jpeg')">
+                <div class="cover-body">
+                    <header class="header">
+                        <hgroup>
+                            <h1 class="brand-main"><a href=".">Elizabeth's Portfolio</a></h1>
+                            <p class="tagline">Experiments in Data Science</p>
+                                <p class="links"><a href="/category/projects.html">View Work</a></p>
+                                <p class="social">
+                                    <a href="https://github.com/erych">
+                                        <i class="fa fa-github fa-3x"></i>
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/elizabeth-rychlinski-54a50a49/">
+                                        <i class="fa fa-linkedin-square fa-3x"></i>
+                                    </a>
+                                </p>
+                        </hgroup>
+                    </header>
+                </div>
+            </div>
+        </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Predicting Interest in Manhattan Rental Listings</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="./tag/machine-learning.html">machine learning</a>
+                                <a class="post-category" href="./tag/python.html">python</a>
+                                <a class="post-category" href="./tag/fintech.html">fintech</a>
+                        </p>
+                </header>
+            </section>
+            <h4>This project was completed for Machine Learning I, @ George Washington University, with Lee Eyler, Jacob McKay, and Mikko He. The python code for this project is can be found <a href="/python-predicting-interest-in-manhattan-rental-listings.html">here</a>.</h4>
+<p><img alt="" src="https://github.com/ERych/erych.github.io/blob/master/images/nyc.png?raw=true"></p>
+<h2>Background</h2>
+<p>Apartment hunting is challenging.  For the renter, the process of relocating, assessing housing options, and making a long-term decision on a residency can be a tiring and time consuming process.  For the landlord or broker, the task of identifying how best to showcase and price a listing can be complex and overwhelming.  Companies such as RentHop are trying to simplify the apartment hunting process for everyone involved using a data-driven approach.</p>
+<p>The below analysis was completed by our Finance and Economics team while participating in the Two Sigma Connect: Rental Listing Inquiries competition on Kaggle. The competition is focused on accurately predicting the demand for rental properties in the New York City area using data provided by Rent Hop. Two Sigma posed the question: How much interest will a new rental listing on RentHop receive in New York City? To solve this problem, we created a multi-class prediction model that accurately assigns probabilities to the demand level classes for a particular rental listing.</p>
+<p>The prediction model is important because it provides a foundation for:
+1. Exploring the types of apartment features that are most indicative of demand
+2. Matching availability and demand expectations between landlords/brokers and renters
+3. Identifying irregular patterns between listing information and demand</p>
+<h2>Data Overview</h2>
+<p>Renthop provides a comprehensive set of 14 independent attributes that cover many of the key determinants of demand, such as physical location, price, bedroom/bathroom counts, etc.</p>
+<p>The dataset did not require extensive cleansing, thus, we focused on the data preprocessing on feature engineering rather than missing data and outliers. This included the creation of 14 variables <em>additional</em> variables through the following engineering:</p>
+<ul>
+<li>Date time (year, month, day, hour, day of week)</li>
+<li>Number of photos (photo_count)</li>
+<li>Price per bathroom and bedroom (price_per_bed; price_per_bedbath)</li>
+<li>If listing has an elevator (Elevator)</li>
+<li>If listing has doorman (Doorman)</li>
+<li>If listing has hardwood floors (Hardwood)</li>
+<li>If listing has laundry (Laundry)</li>
+<li>If listing has a dishwasher (Dishwasher)</li>
+<li>Number of features listed in the “features” column</li>
+</ul>
+<h2>Feature Importance</h2>
+<p>Feature Importance is a method of data analysis that provides a score to see how useful or valuable each feature is. We did this through a random forest classifier; The attribute is used more to make key decisions if it has a higher relative importance.</p>
+<p>The Random Forest classifier provided the following results, estimating that about half of the available features are important in regards to decreasing node impurity.  The most important predictors are related to location, price, and time.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+
+<span class="c1"># select variables; leaving out categorical data for now</span>
+<span class="n">X_train_rf_features</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">26</span><span class="p">,</span><span class="mi">27</span><span class="p">]]</span>
+<span class="n">y_train_rf_features</span> <span class="o">=</span> <span class="n">y_train</span>
+<span class="n">X_test_rf_features</span> <span class="o">=</span> <span class="n">X_test</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">26</span><span class="p">,</span><span class="mi">27</span><span class="p">]]</span>
+<span class="n">feature_labels</span> <span class="o">=</span> <span class="n">full_df</span><span class="o">.</span><span class="n">columns</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">26</span><span class="p">,</span><span class="mi">27</span><span class="p">,</span><span class="mi">28</span><span class="p">]]</span>
+
+<span class="c1"># set features for RF</span>
+<span class="n">forest</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+                               <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                               <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># fit the model</span>
+<span class="n">forest</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_rf_features</span><span class="p">,</span><span class="n">y_train_rf_features</span><span class="p">)</span>
+
+<span class="c1"># obtain feature importances</span>
+<span class="n">feat_importance</span> <span class="o">=</span> <span class="n">forest</span><span class="o">.</span><span class="n">feature_importances_</span>
+
+<span class="c1"># create indices</span>
+<span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">feat_importance</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># print variables and standardized importance score</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_train_rf_features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%2d</span><span class="s2">) </span><span class="si">%-*s</span><span class="s2"> </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">f</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">feature_labels</span><span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="n">f</span><span class="p">]],</span> <span class="n">feat_importance</span><span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="n">f</span><span class="p">]]))</span>
+</pre></div>
+
+
+<p><img alt="" src="https://github.com/ERych/erych.github.io/blob/master/images/FeatureImportance.png?raw=true"></p>
+<h2>Feature Extraction</h2>
+<p>Feature extraction is an approach to data compression that projects data onto a new feature space in order to show the most relevant information within the dataset. This is a valuable took to improve computational efficiency.</p>
+<p>The Principal Component Analysis (unsupervised dimensionality reduction) shows that projecting the existing variables onto a smaller subspace can still be highly representative of the original data set. Eight principal components account for ~80% of explained variance.</p>
+<h2>Principal Component Analysis</h2>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
+<span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+<span class="c1"># only using numeric and categorical data w/ dummy variables</span>
+<span class="n">X_train_for_pca</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">26</span><span class="p">,</span><span class="mi">27</span><span class="p">]]</span>
+
+<span class="c1"># standardize the data</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="n">stdsc</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+<span class="n">X_train_for_pca_std</span> <span class="o">=</span> <span class="n">stdsc</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train_for_pca</span><span class="p">)</span>
+
+<span class="c1"># fitting pca to the data</span>
+<span class="n">X_train_pca</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train_for_pca_std</span><span class="p">)</span>
+
+<span class="c1"># obtain feature importances</span>
+<span class="n">pca_var_explained</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">explained_variance_ratio_</span>
+<span class="n">feature_labels</span> <span class="o">=</span> <span class="n">full_df</span><span class="o">.</span><span class="n">columns</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">26</span><span class="p">,</span><span class="mi">27</span><span class="p">,</span><span class="mi">28</span><span class="p">]]</span>
+
+<span class="c1"># cumulative sum of explained ration</span>
+<span class="n">cumulative_var_explained</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">pca_var_explained</span><span class="p">)</span>
+
+<span class="c1"># cumulative distribution function for principle componets</span>
+<span class="c1"># based on explained variance ratio</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;whitegrid&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_color_codes</span><span class="p">(</span><span class="s2">&quot;pastel&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s1">&#39;talk&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">X_train_for_pca</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">cumulative_var_explained</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">X_train_for_pca</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Principal Components:  Cumulative Explained Variance Ratio&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="" src="https://github.com/ERych/erych.github.io/blob/master/images/PCA.png?raw=true"></p>
+<h2>Modeling, Evaluation, and Tuning</h2>
+<p>Three modeling techniques were leveraged:</p>
+<ol>
+<li>Random Forest</li>
+<li>K Nearest Neighbors</li>
+<li>Logistic Regression</li>
+</ol>
+<p>Below is a summary of each model, model analysis, and model tuning performed. To assess initial model performance, we used a cross validated accuracy score.</p>
+<h3>Random Forest</h3>
+<p>Random Forest is a classification model that is built on an ensemble of decision trees. Decision trees perform the best possible split at each node according to the information gained. This is repeated k number of times, and the predictions are aggregated and assigned class labels based on majority vote.</p>
+<p>We chose Random Forest because our network’s input contains several categorical features. Our Random Forest model achieved the following accuracy for predicting level of interest:</p>
+<p><em>[(0.72557776798683371, 0.73174339097955354, 0.73790901397227338)]</em></p>
+<p>These three accuracy scores represent a high/low estimate of accuracy, with the mean minus standard deviation, the mean, and the mean plus one standard deviation, respectively.</p>
+<p>We used a Receiver Operating Characteristic curve (or ROC curve) to plot the true positive rate against the false positive rate for the different possible cutpoints of our model. Our Random Forest model performed best predicting class 1, or “medium” interest listings.</p>
+<p><img alt="" src="https://github.com/ERych/erych.github.io/blob/master/images/rfROC.png?raw=true"></p>
+<h3>K Nearest Neighbors (KNN)</h3>
+<p>KNN is a non-parametric classification algorithm that stores all occurrences and classifies new ones on the basis of similarity measurement training.</p>
+<p>Using all numeric variables, our KNN model achieved the following accuracy for predicting level of interest:</p>
+<p><em>[(0.66046962839819823, 0.66566638970107761, 0.67086315100395699)]</em></p>
+<p>Using the numeric variables determined by random forest feature selection, our KNN model achieved the following accuracy for predicting level of interest:</p>
+<p><em>[(0.66399494141264304, 0.66850385231130738, 0.67301276320997172)]</em></p>
+<p>The model performed lightly better using the variables determined by random forest feature selection.</p>
+<p>Like our Random Forest model, the KNN model performed best predicting class 1, or “medium” interest listings.</p>
+<p><img alt="" src="https://github.com/ERych/erych.github.io/blob/master/images/knnROC.png?raw=true"></p>
+<h3>Logistic Regression</h3>
+<p>Logistic Regression is a classification algorithm containing a categorical response variable used for predictive modeling. We chose Logistic Regression because we sought to discover the relationships between our numerous explanatory variables and the categorical response, Level of Interest.</p>
+<p>Using all numeric variables, our Logistic Regression model achieved the following accuracy for predicting Level of Interest:</p>
+<p><em>[(0.69152577988828101, 0.69557479886143891, 0.69962381783459682)]</em></p>
+<p>Using the numeric variables determined by random forest feature selection, our Logistic Regression model achieved the following accuracy for predicting level of interest:</p>
+<p><em>[(0.68877017582389244, 0.69138030682828888, 0.69399043783268533)]</em></p>
+<p>The model performed slightly better using all variables.</p>
+<p>Like both previous models, the Logistic Regression model performed best predicting class 1, or “medium” interest listings.</p>
+<p><img alt="" src="https://github.com/ERych/erych.github.io/blob/master/images/lrROC.png?raw=true"></p>
+<h2>Performance Optimization</h2>
+<p>Grid search was chosen for performance optimization. Because it takes a lot of computing power to run, we limited grid search to just one model, Random Forest (as it is the best classifier according to ROC curves).</p>
+<p>The grid search provided by Scikit-learn GridSearchCV generates candidates from a “grid” of parameter values. When “fitting” it on a dataset, all the possible combinations of parameter values are evaluated and the best combination is retained. As seen below, the accuracy score was not dramatically improved using grid search.</p>
+<div class="highlight"><pre><span></span><span class="c1"># initiate random forest for grid search and cross validation</span>
+<span class="n">forest</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># create parameter grid for grid search</span>
+<span class="n">crit_param</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gini&#39;</span><span class="p">,</span><span class="s1">&#39;entropy&#39;</span><span class="p">]</span>
+<span class="n">tree_param</span> <span class="o">=</span> <span class="p">[</span><span class="mi">300</span><span class="p">,</span><span class="mi">600</span><span class="p">]</span>
+<span class="n">max_feature_param</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">gs_param_grid</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;criterion&#39;</span><span class="p">:</span> <span class="n">crit_param</span><span class="p">,</span>
+               <span class="s1">&#39;n_estimators&#39;</span><span class="p">:</span> <span class="n">tree_param</span><span class="p">,</span>
+               <span class="s1">&#39;max_features&#39;</span><span class="p">:</span> <span class="n">max_feature_param</span>
+              <span class="p">}]</span>
+<span class="c1"># create grid search object</span>
+<span class="n">rf_gridsearch</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="n">forest</span><span class="p">,</span> <span class="n">param_grid</span><span class="o">=</span><span class="n">gs_param_grid</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># fit grid search model</span>
+<span class="n">rf</span> <span class="o">=</span> <span class="n">rf_gridsearch</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_rf_features</span><span class="p">,</span> <span class="n">y_train_rf_features</span><span class="p">)</span>
+
+<span class="n">rf</span><span class="o">.</span><span class="n">best_score_</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">84</span><span class="p">]:</span>
+<span class="mf">0.73097341546441885</span>
+
+<span class="n">rf</span><span class="o">.</span><span class="n">best_params_</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">85</span><span class="p">]:</span>
+<span class="p">{</span><span class="s1">&#39;criterion&#39;</span><span class="p">:</span> <span class="s1">&#39;entropy&#39;</span><span class="p">,</span> <span class="s1">&#39;max_features&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;n_estimators&#39;</span><span class="p">:</span> <span class="mi">600</span><span class="p">}</span>
+</pre></div>
+
+
+<h2>Conclusion</h2>
+<p>Through the utilization of random forest modeling, KNN and Logistic Regression, our team was able to  successfully outline the degrees of accuracy between the various predictors of apartment demand. The random forest classifier deemed useful through it’s ability to estimate roughly half of the available features are important in regards to decreasing node impurity. Of those features, those considered the most important in predicting apartment demand are location, price, and time.</p>
+<p>From there, our three models enabled us to better understand the high/low estimates of accuracy for predicting apartment demand.</p>
+<p>There is further research to be study rental apartment demand using this data which would help improve our accuracy. First, we recommend increasing the domain knowledge of the data, for example, interviews with New York City apartment searchers or real estate professionals. Second, we recommend further feature engineering to improve accuracy. We believe that investing in the Google Maps API will be valuable to provide location data that can be used to target interest level. Finally, we believe that there is room to explore model tuning techniques, beyond grid search, to improve performance and accuracy.</p>
+<h2>Code</h2>
+<p>The python code for this project is can be found <a href="/python-predicting-interest-in-manhattan-rental-listings.html">here</a>.</p>
+            <a href="#" class="go-top">Go Top</a>
+<footer class="footer">
+    <p>&copy; Elizabeth Rychlinski &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+    </div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+
+</body>
+</html>

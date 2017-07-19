@@ -1,0 +1,2268 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Elizabeth's Portfolio, Experiments in Data Sciecne">
+
+
+        <title>Python: Predicting Loan Demand Using Logistic Regression // Elizabeth's Portfolio // Experiments in Data Sciecne</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./theme/css/pure.css">
+    <link rel="stylesheet" href="./theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="pure-g-r" id="layout">
+        <div class="sidebar pure-u">
+            <div class="cover-img" style="background-image: url('https://static.pexels.com/photos/205324/pexels-photo-205324.jpeg')">
+                <div class="cover-body">
+                    <header class="header">
+                        <hgroup>
+                            <h1 class="brand-main"><a href=".">Elizabeth's Portfolio</a></h1>
+                            <p class="tagline">Experiments in Data Sciecne</p>
+                                <p class="links"><a href="/category/projects.html">View Work</a></p>
+                                <p class="social">
+                                    <a href="https://github.com/erych">
+                                        <i class="fa fa-github fa-3x"></i>
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/elizabeth-rychlinski-54a50a49/">
+                                        <i class="fa fa-linkedin-square fa-3x"></i>
+                                    </a>
+                                </p>
+                        </hgroup>
+                    </header>
+                </div>
+            </div>
+        </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Python: Predicting Loan Demand Using Logistic Regression</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="./tag/machine-learning.html">machine learning</a>
+                                <a class="post-category" href="./tag/python.html">python</a>
+                                <a class="post-category" href="./tag/fintech.html">fintech</a>
+                        </p>
+                </header>
+            </section>
+            <style type="text/css">/*!
+*
+* IPython notebook
+*
+*/
+/* CSS font colors for translated ANSI colors. */
+.ansibold {
+  font-weight: bold;
+}
+/* use dark versions for foreground, to improve visibility */
+.ansiblack {
+  color: black;
+}
+.ansired {
+  color: darkred;
+}
+.ansigreen {
+  color: darkgreen;
+}
+.ansiyellow {
+  color: #c4a000;
+}
+.ansiblue {
+  color: darkblue;
+}
+.ansipurple {
+  color: darkviolet;
+}
+.ansicyan {
+  color: steelblue;
+}
+.ansigray {
+  color: gray;
+}
+/* and light for background, for the same reason */
+.ansibgblack {
+  background-color: black;
+}
+.ansibgred {
+  background-color: red;
+}
+.ansibggreen {
+  background-color: green;
+}
+.ansibgyellow {
+  background-color: yellow;
+}
+.ansibgblue {
+  background-color: blue;
+}
+.ansibgpurple {
+  background-color: magenta;
+}
+.ansibgcyan {
+  background-color: cyan;
+}
+.ansibggray {
+  background-color: gray;
+}
+div.cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border-radius: 2px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+  width: 100%;
+  padding: 5px;
+  /* This acts as a spacer between cells, that is outside the border */
+  margin: 0px;
+  outline: none;
+  border-left-width: 1px;
+  padding-left: 5px;
+  background: linear-gradient(to right, transparent -40px, transparent 1px, transparent 1px, transparent 100%);
+}
+div.cell.jupyter-soft-selected {
+  border-left-color: #90CAF9;
+  border-left-color: #E3F2FD;
+  border-left-width: 1px;
+  padding-left: 5px;
+  border-right-color: #E3F2FD;
+  border-right-width: 1px;
+  background: #E3F2FD;
+}
+@media print {
+  div.cell.jupyter-soft-selected {
+    border-color: transparent;
+  }
+}
+div.cell.selected {
+  border-color: #ababab;
+  border-left-width: 0px;
+  padding-left: 6px;
+  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 5px, transparent 5px, transparent 100%);
+}
+@media print {
+  div.cell.selected {
+    border-color: transparent;
+  }
+}
+div.cell.selected.jupyter-soft-selected {
+  border-left-width: 0;
+  padding-left: 6px;
+  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 7px, #E3F2FD 7px, #E3F2FD 100%);
+}
+.edit_mode div.cell.selected {
+  border-color: #66BB6A;
+  border-left-width: 0px;
+  padding-left: 6px;
+  background: linear-gradient(to right, #66BB6A -40px, #66BB6A 5px, transparent 5px, transparent 100%);
+}
+@media print {
+  .edit_mode div.cell.selected {
+    border-color: transparent;
+  }
+}
+.prompt {
+  /* This needs to be wide enough for 3 digit prompt numbers: In[100]: */
+  min-width: 14ex;
+  /* This padding is tuned to match the padding on the CodeMirror editor. */
+  padding: 0.4em;
+  margin: 0px;
+  font-family: monospace;
+  text-align: right;
+  /* This has to match that of the the CodeMirror class line-height below */
+  line-height: 1.21429em;
+  /* Don't highlight prompt number selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Use default cursor */
+  cursor: default;
+}
+@media (max-width: 540px) {
+  .prompt {
+    text-align: left;
+  }
+}
+div.inner_cell {
+  min-width: 0;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  /* Old browsers */
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  /* Modern browsers */
+  flex: 1;
+}
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_area {
+  border: 1px solid #cfcfcf;
+  border-radius: 2px;
+  background: #f7f7f7;
+  line-height: 1.21429em;
+}
+/* This is needed so that empty prompt areas can collapse to zero height when there
+   is no content in the output_subarea and the prompt. The main purpose of this is
+   to make sure that empty JavaScript output_subareas have no height. */
+div.prompt:empty {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+div.unrecognized_cell {
+  padding: 5px 5px 5px 0px;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+div.unrecognized_cell .inner_cell {
+  border-radius: 2px;
+  padding: 5px;
+  font-weight: bold;
+  color: red;
+  border: 1px solid #cfcfcf;
+  background: #eaeaea;
+}
+div.unrecognized_cell .inner_cell a {
+  color: inherit;
+  text-decoration: none;
+}
+div.unrecognized_cell .inner_cell a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+@media (max-width: 540px) {
+  div.unrecognized_cell > div.prompt {
+    display: none;
+  }
+}
+div.code_cell {
+  /* avoid page breaking on code cells when printing */
+}
+@media print {
+  div.code_cell {
+    page-break-inside: avoid;
+  }
+}
+/* any special styling for code cells that are currently running goes here */
+div.input {
+  page-break-inside: avoid;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.input {
+    /* Old browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    -moz-box-align: stretch;
+    display: box;
+    box-orient: vertical;
+    box-align: stretch;
+    /* Modern browsers */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_prompt {
+  color: #303F9F;
+  border-top: 1px solid transparent;
+}
+div.input_area > div.highlight {
+  margin: 0.4em;
+  border: none;
+  padding: 0px;
+  background-color: transparent;
+}
+div.input_area > div.highlight > pre {
+  margin: 0px;
+  border: none;
+  padding: 0px;
+  background-color: transparent;
+}
+/* The following gets added to the <head> if it is detected that the user has a
+ * monospace font with inconsistent normal/bold/italic height.  See
+ * notebookmain.js.  Such fonts will have keywords vertically offset with
+ * respect to the rest of the text.  The user should select a better font.
+ * See: https://github.com/ipython/ipython/issues/1503
+ *
+ * .CodeMirror span {
+ *      vertical-align: bottom;
+ * }
+ */
+.CodeMirror {
+  line-height: 1.21429em;
+  /* Changed from 1em to our global default */
+  font-size: 14px;
+  height: auto;
+  /* Changed to auto to autogrow */
+  background: none;
+  /* Changed from white to allow our bg to show through */
+}
+.CodeMirror-scroll {
+  /*  The CodeMirror docs are a bit fuzzy on if overflow-y should be hidden or visible.*/
+  /*  We have found that if it is visible, vertical scrollbars appear with font size changes.*/
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+.CodeMirror-lines {
+  /* In CM2, this used to be 0.4em, but in CM3 it went to 4px. We need the em value because */
+  /* we have set a different line-height and want this to scale with that. */
+  padding: 0.4em;
+}
+.CodeMirror-linenumber {
+  padding: 0 8px 0 4px;
+}
+.CodeMirror-gutters {
+  border-bottom-left-radius: 2px;
+  border-top-left-radius: 2px;
+}
+.CodeMirror pre {
+  /* In CM3 this went to 4px from 0 in CM2. We need the 0 value because of how we size */
+  /* .CodeMirror-lines */
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+/*
+
+Original style from softwaremaniacs.org (c) Ivan Sagalaev <Maniac@SoftwareManiacs.Org>
+Adapted from GitHub theme
+
+*/
+.highlight-base {
+  color: #000;
+}
+.highlight-variable {
+  color: #000;
+}
+.highlight-variable-2 {
+  color: #1a1a1a;
+}
+.highlight-variable-3 {
+  color: #333333;
+}
+.highlight-string {
+  color: #BA2121;
+}
+.highlight-comment {
+  color: #408080;
+  font-style: italic;
+}
+.highlight-number {
+  color: #080;
+}
+.highlight-atom {
+  color: #88F;
+}
+.highlight-keyword {
+  color: #008000;
+  font-weight: bold;
+}
+.highlight-builtin {
+  color: #008000;
+}
+.highlight-error {
+  color: #f00;
+}
+.highlight-operator {
+  color: #AA22FF;
+  font-weight: bold;
+}
+.highlight-meta {
+  color: #AA22FF;
+}
+/* previously not defined, copying from default codemirror */
+.highlight-def {
+  color: #00f;
+}
+.highlight-string-2 {
+  color: #f50;
+}
+.highlight-qualifier {
+  color: #555;
+}
+.highlight-bracket {
+  color: #997;
+}
+.highlight-tag {
+  color: #170;
+}
+.highlight-attribute {
+  color: #00c;
+}
+.highlight-header {
+  color: blue;
+}
+.highlight-quote {
+  color: #090;
+}
+.highlight-link {
+  color: #00c;
+}
+/* apply the same style to codemirror */
+.cm-s-ipython span.cm-keyword {
+  color: #008000;
+  font-weight: bold;
+}
+.cm-s-ipython span.cm-atom {
+  color: #88F;
+}
+.cm-s-ipython span.cm-number {
+  color: #080;
+}
+.cm-s-ipython span.cm-def {
+  color: #00f;
+}
+.cm-s-ipython span.cm-variable {
+  color: #000;
+}
+.cm-s-ipython span.cm-operator {
+  color: #AA22FF;
+  font-weight: bold;
+}
+.cm-s-ipython span.cm-variable-2 {
+  color: #1a1a1a;
+}
+.cm-s-ipython span.cm-variable-3 {
+  color: #333333;
+}
+.cm-s-ipython span.cm-comment {
+  color: #408080;
+  font-style: italic;
+}
+.cm-s-ipython span.cm-string {
+  color: #BA2121;
+}
+.cm-s-ipython span.cm-string-2 {
+  color: #f50;
+}
+.cm-s-ipython span.cm-meta {
+  color: #AA22FF;
+}
+.cm-s-ipython span.cm-qualifier {
+  color: #555;
+}
+.cm-s-ipython span.cm-builtin {
+  color: #008000;
+}
+.cm-s-ipython span.cm-bracket {
+  color: #997;
+}
+.cm-s-ipython span.cm-tag {
+  color: #170;
+}
+.cm-s-ipython span.cm-attribute {
+  color: #00c;
+}
+.cm-s-ipython span.cm-header {
+  color: blue;
+}
+.cm-s-ipython span.cm-quote {
+  color: #090;
+}
+.cm-s-ipython span.cm-link {
+  color: #00c;
+}
+.cm-s-ipython span.cm-error {
+  color: #f00;
+}
+.cm-s-ipython span.cm-tab {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);
+  background-position: right;
+  background-repeat: no-repeat;
+}
+div.output_wrapper {
+  /* this position must be relative to enable descendents to be absolute within it */
+  position: relative;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  z-index: 1;
+}
+/* class for the output area when it should be height-limited */
+div.output_scroll {
+  /* ideally, this would be max-height, but FF barfs all over that */
+  height: 24em;
+  /* FF needs this *and the wrapper* to specify full width, or it will shrinkwrap */
+  width: 100%;
+  overflow: auto;
+  border-radius: 2px;
+  -webkit-box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  display: block;
+}
+/* output div while it is collapsed */
+div.output_collapsed {
+  margin: 0px;
+  padding: 0px;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+div.out_prompt_overlay {
+  height: 100%;
+  padding: 0px 0.4em;
+  position: absolute;
+  border-radius: 2px;
+}
+div.out_prompt_overlay:hover {
+  /* use inner shadow to get border that is computed the same on WebKit/FF */
+  -webkit-box-shadow: inset 0 0 1px #000;
+  box-shadow: inset 0 0 1px #000;
+  background: rgba(240, 240, 240, 0.5);
+}
+div.output_prompt {
+  color: #D84315;
+}
+/* This class is the outer container of all output sections. */
+div.output_area {
+  padding: 0px;
+  page-break-inside: avoid;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+div.output_area .MathJax_Display {
+  text-align: left !important;
+}
+div.output_area 
+div.output_area 
+div.output_area img,
+div.output_area svg {
+  max-width: 100%;
+  height: auto;
+}
+div.output_area img.unconfined,
+div.output_area svg.unconfined {
+  max-width: none;
+}
+/* This is needed to protect the pre formating from global settings such
+   as that of bootstrap */
+.output {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.output_area {
+    /* Old browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    -moz-box-align: stretch;
+    display: box;
+    box-orient: vertical;
+    box-align: stretch;
+    /* Modern browsers */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+div.output_area pre {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+  color: black;
+  background-color: transparent;
+  border-radius: 0;
+}
+/* This class is for the output subarea inside the output_area and after
+   the prompt div. */
+div.output_subarea {
+  overflow-x: auto;
+  padding: 0.4em;
+  /* Old browsers */
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  /* Modern browsers */
+  flex: 1;
+  max-width: calc(100% - 14ex);
+}
+div.output_scroll div.output_subarea {
+  overflow-x: visible;
+}
+/* The rest of the output_* classes are for special styling of the different
+   output types */
+/* all text output has this class: */
+div.output_text {
+  text-align: left;
+  color: #000;
+  /* This has to match that of the the CodeMirror class line-height below */
+  line-height: 1.21429em;
+}
+/* stdout/stderr are 'text' as well as 'stream', but execute_result/error are *not* streams */
+div.output_stderr {
+  background: #fdd;
+  /* very light red background for stderr */
+}
+div.output_latex {
+  text-align: left;
+}
+/* Empty output_javascript divs should have no height */
+div.output_javascript:empty {
+  padding: 0;
+}
+.js-error {
+  color: darkred;
+}
+/* raw_input styles */
+div.raw_input_container {
+  line-height: 1.21429em;
+  padding-top: 5px;
+}
+pre.raw_input_prompt {
+  /* nothing needed here. */
+}
+input.raw_input {
+  font-family: monospace;
+  font-size: inherit;
+  color: inherit;
+  width: auto;
+  /* make sure input baseline aligns with prompt */
+  vertical-align: baseline;
+  /* padding + margin = 0.5em between prompt and cursor */
+  padding: 0em 0.25em;
+  margin: 0em 0.25em;
+}
+input.raw_input:focus {
+  box-shadow: none;
+}
+p.p-space {
+  margin-bottom: 10px;
+}
+div.output_unrecognized {
+  padding: 5px;
+  font-weight: bold;
+  color: red;
+}
+div.output_unrecognized a {
+  color: inherit;
+  text-decoration: none;
+}
+div.output_unrecognized a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+.rendered_html {
+  color: #000;
+  /* any extras will just be numbers: */
+}
+
+
+
+.rendered_html :link {
+  text-decoration: underline;
+}
+.rendered_html :visited {
+  text-decoration: underline;
+}
+
+
+
+
+
+
+.rendered_html h1:first-child {
+  margin-top: 0.538em;
+}
+.rendered_html h2:first-child {
+  margin-top: 0.636em;
+}
+.rendered_html h3:first-child {
+  margin-top: 0.777em;
+}
+.rendered_html h4:first-child {
+  margin-top: 1em;
+}
+.rendered_html h5:first-child {
+  margin-top: 1em;
+}
+.rendered_html h6:first-child {
+  margin-top: 1em;
+}
+
+
+
+
+
+
+
+
+.rendered_html * + ul {
+  margin-top: 1em;
+}
+.rendered_html * + ol {
+  margin-top: 1em;
+}
+
+
+.rendered_html pre,
+
+
+
+.rendered_html tr,
+.rendered_html th,
+
+.rendered_html td,
+
+
+.rendered_html * + table {
+  margin-top: 1em;
+}
+
+.rendered_html * + p {
+  margin-top: 1em;
+}
+
+.rendered_html * + img {
+  margin-top: 1em;
+}
+.rendered_html img,
+
+.rendered_html img.unconfined,
+
+div.text_cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.text_cell > div.prompt {
+    display: none;
+  }
+}
+div.text_cell_render {
+  /*font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;*/
+  outline: none;
+  resize: none;
+  width: inherit;
+  border-style: none;
+  padding: 0.5em 0.5em 0.5em 0.4em;
+  color: #000;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+a.anchor-link:link {
+  text-decoration: none;
+  padding: 0px 20px;
+  visibility: hidden;
+}
+h1:hover .anchor-link,
+h2:hover .anchor-link,
+h3:hover .anchor-link,
+h4:hover .anchor-link,
+h5:hover .anchor-link,
+h6:hover .anchor-link {
+  visibility: visible;
+}
+.text_cell.rendered .input_area {
+  display: none;
+}
+.text_cell.rendered 
+.text_cell.unrendered .text_cell_render {
+  display: none;
+}
+.cm-header-1,
+.cm-header-2,
+.cm-header-3,
+.cm-header-4,
+.cm-header-5,
+.cm-header-6 {
+  font-weight: bold;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.cm-header-1 {
+  font-size: 185.7%;
+}
+.cm-header-2 {
+  font-size: 157.1%;
+}
+.cm-header-3 {
+  font-size: 128.6%;
+}
+.cm-header-4 {
+  font-size: 110%;
+}
+.cm-header-5 {
+  font-size: 100%;
+  font-style: italic;
+}
+.cm-header-6 {
+  font-size: 100%;
+  font-style: italic;
+}
+</style>
+<style type="text/css">.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #888888 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0044DD } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mb { color: #666666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #0000FF } /* Name.Function.Magic */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .vm { color: #19177C } /* Name.Variable.Magic */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */</style>
+<style type="text/css">
+/* Temporary definitions which will become obsolete with Notebook release 5.0 */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-bold { font-weight: bold; }
+</style>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [1]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
+<span class="kn">import</span> <span class="nn">sklearn</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="k">import</span> <span class="n">punctuation</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">metrics</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <span class="n">LogisticRegression</span> <span class="k">as</span> <span class="n">LR</span>
+<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="k">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">accuracy_score</span> 
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="k">import</span> <span class="n">wordnet</span>
+<span class="o">%</span> <span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">from</span> <span class="nn">wordcloud</span> <span class="k">import</span> <span class="n">WordCloud</span><span class="p">,</span> <span class="n">STOPWORDS</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [2]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"loan.csv"</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="s2">"purpose"</span><span class="p">,</span> <span class="s2">"title"</span><span class="p">,</span><span class="s2">"id"</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [3]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#the title column has a short desciption of the borrower's loan. This is the field we will use, but first we need to make sure it is a string. </span>
+<span class="n">data</span><span class="p">[</span><span class="s1">'title'</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'title'</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [4]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#creates a list of indexes for all titles under purpose = other. </span>
+<span class="n">other_index</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">'purpose'</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"other"</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [5]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#these are the words that we don't care about in the string and don't want to include</span>
+<span class="n">bad_list</span> <span class="o">=</span><span class="p">[</span><span class="s1">'if'</span><span class="p">,</span><span class="s1">'the'</span><span class="p">,</span><span class="s2">"on"</span><span class="p">,</span><span class="s2">"and"</span><span class="p">,</span><span class="s2">"for"</span><span class="p">,</span><span class="s2">"my"</span><span class="p">,</span> <span class="s2">"to"</span><span class="p">,</span> <span class="s2">"a"</span><span class="p">,</span> <span class="s2">"off"</span><span class="p">,</span> <span class="s2">"pay"</span><span class="p">,</span> <span class="s2">"loan"</span><span class="p">,</span> <span class="s2">"other"</span><span class="p">,</span> <span class="s2">"payoff"</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [6]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#This loop provides a list of words contained in each string and the corresponding loan id</span>
+<span class="n">key_list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">word_list</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">other_index</span><span class="p">:</span>
+    <span class="n">local_list</span><span class="o">=</span><span class="p">[]</span>
+    <span class="c1">#splits string into separate words and creates a list</span>
+    <span class="n">local_list</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'title'</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">local_list</span><span class="p">:</span>
+        <span class="c1">#makes word all lowercase</span>
+        <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>   
+        <span class="c1">#removes any punctuation</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">punctuation</span><span class="p">):</span>
+            <span class="n">word</span><span class="o">=</span><span class="n">word</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="s1">''</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">bad_list</span><span class="p">:</span>
+            <span class="c1">#appends word and loan id lists outside of function above</span>
+            <span class="n">word_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+            <span class="n">key_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">'id'</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [7]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#create an empty dataframe</span>
+<span class="n">words_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<span class="c1">#adds the two news lists as columns of the dataframe</span>
+<span class="n">words_df</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">key_list</span>
+<span class="n">words_df</span><span class="p">[</span><span class="s1">'word'</span><span class="p">]</span> <span class="o">=</span> <span class="n">word_list</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#note: this cell is slow to run</span>
+<span class="c1">#As a way to visualize what we've done so far, I created a word cloud using our text data</span>
+
+<span class="c1"># join tweets to a single string</span>
+
+<span class="n">words</span> <span class="o">=</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">words_df</span><span class="p">[</span><span class="s1">'word'</span><span class="p">])</span>
+<span class="c1">#creates the word could</span>
+<span class="n">wordcloud</span> <span class="o">=</span> <span class="n">WordCloud</span><span class="p">(</span>
+                      <span class="n">font_path</span><span class="o">=</span><span class="s1">'/Users/lizdeschaine/Library/Fonts/Arial.ttf'</span><span class="p">,</span>
+                      <span class="n">background_color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span>
+                      <span class="n">width</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span>
+                      <span class="n">height</span><span class="o">=</span><span class="mi">4000</span>
+                     <span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">words</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">wordcloud</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">'off'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [10]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#now we want all of the data to merge with our string data frame</span>
+<span class="n">full_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"loan.csv"</span><span class="p">)</span>
+<span class="c1">#only use the first 30 columns</span>
+<span class="n">full_data</span> <span class="o">=</span> <span class="n">full_data</span><span class="o">.</span><span class="n">ix</span><span class="p">[:,:</span><span class="mi">30</span><span class="p">]</span>
+<span class="c1">#merge the two dataframes on 'id'</span>
+<span class="n">merge_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">full_data</span><span class="p">,</span> <span class="n">words_df</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">'id'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>//anaconda/lib/python3.5/site-packages/IPython/core/interactiveshell.py:2723: DtypeWarning: Columns (19,55) have mixed types. Specify dtype option on import or set low_memory=False.
+  interactivity=interactivity, compiler=compiler, result=result)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [11]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Checking to see if the merge worked correctly. If the column "word" is there - it did!</span>
+<span class="n">merge_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[11]:</div>
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>id</th>
+<th>member_id</th>
+<th>loan_amnt</th>
+<th>funded_amnt</th>
+<th>funded_amnt_inv</th>
+<th>term</th>
+<th>int_rate</th>
+<th>installment</th>
+<th>grade</th>
+<th>sub_grade</th>
+<th>...</th>
+<th>title</th>
+<th>zip_code</th>
+<th>addr_state</th>
+<th>dti</th>
+<th>delinq_2yrs</th>
+<th>earliest_cr_line</th>
+<th>inq_last_6mths</th>
+<th>mths_since_last_delinq</th>
+<th>mths_since_last_record</th>
+<th>word</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>1076863</td>
+<td>1277178</td>
+<td>10000.0</td>
+<td>10000.0</td>
+<td>10000.0</td>
+<td>36 months</td>
+<td>13.49</td>
+<td>339.31</td>
+<td>C</td>
+<td>C1</td>
+<td>...</td>
+<td>personel</td>
+<td>917xx</td>
+<td>CA</td>
+<td>20.00</td>
+<td>0.0</td>
+<td>Feb-1996</td>
+<td>1.0</td>
+<td>35.0</td>
+<td>NaN</td>
+<td>personel</td>
+</tr>
+<tr>
+<th>1</th>
+<td>1075358</td>
+<td>1311748</td>
+<td>3000.0</td>
+<td>3000.0</td>
+<td>3000.0</td>
+<td>60 months</td>
+<td>12.69</td>
+<td>67.79</td>
+<td>B</td>
+<td>B5</td>
+<td>...</td>
+<td>Personal</td>
+<td>972xx</td>
+<td>OR</td>
+<td>17.94</td>
+<td>0.0</td>
+<td>Jan-1996</td>
+<td>0.0</td>
+<td>38.0</td>
+<td>NaN</td>
+<td>personal</td>
+</tr>
+<tr>
+<th>2</th>
+<td>1071570</td>
+<td>1306721</td>
+<td>5375.0</td>
+<td>5375.0</td>
+<td>5350.0</td>
+<td>60 months</td>
+<td>12.69</td>
+<td>121.45</td>
+<td>B</td>
+<td>B5</td>
+<td>...</td>
+<td>Building my credit history.</td>
+<td>774xx</td>
+<td>TX</td>
+<td>18.08</td>
+<td>0.0</td>
+<td>Sep-2004</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>building</td>
+</tr>
+<tr>
+<th>3</th>
+<td>1071570</td>
+<td>1306721</td>
+<td>5375.0</td>
+<td>5375.0</td>
+<td>5350.0</td>
+<td>60 months</td>
+<td>12.69</td>
+<td>121.45</td>
+<td>B</td>
+<td>B5</td>
+<td>...</td>
+<td>Building my credit history.</td>
+<td>774xx</td>
+<td>TX</td>
+<td>18.08</td>
+<td>0.0</td>
+<td>Sep-2004</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>credit</td>
+</tr>
+<tr>
+<th>4</th>
+<td>1071570</td>
+<td>1306721</td>
+<td>5375.0</td>
+<td>5375.0</td>
+<td>5350.0</td>
+<td>60 months</td>
+<td>12.69</td>
+<td>121.45</td>
+<td>B</td>
+<td>B5</td>
+<td>...</td>
+<td>Building my credit history.</td>
+<td>774xx</td>
+<td>TX</td>
+<td>18.08</td>
+<td>0.0</td>
+<td>Sep-2004</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>history</td>
+</tr>
+</tbody>
+</table>
+<p>5 rows × 31 columns</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [12]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#This function will create binary variable for the loan status. I assign each classification a "1" or a "0" and then apply it to the column at the end.</span>
+<span class="k">def</span> <span class="nf">loan_stat_num</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"Charged Off"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"Current"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"Default"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"Does not meet the credit policy. Status:Charged Off"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"Does not meet the credit policy. Status:Fully Paid"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"Fully Paid"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"In Grace Period"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"Issued"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"Late (16-30 days)"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"Late (31-120 days)"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+<span class="n">merge_df</span><span class="p">[</span><span class="s2">"loan_stat_num"</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_df</span><span class="p">[</span><span class="s2">"loan_status"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">loan_stat_num</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [13]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Like with loan status, we assign a dummy variable to the loan grades. This was incase we wanted to use grade as our dependent variable. </span>
+<span class="k">def</span> <span class="nf">grade_num</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"A"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">7</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"B"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">6</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"C"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">5</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"D"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">4</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"E"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">3</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"F"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">"G"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+<span class="n">merge_df</span><span class="p">[</span><span class="s2">"grade_num"</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_df</span><span class="p">[</span><span class="s2">"grade"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">grade_num</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [14]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#We first create a new column "cat" for category </span>
+<span class="n">merge_df</span><span class="p">[</span><span class="s1">'cat'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">""</span>
+<span class="c1">#The column is empty and will contain a string </span>
+<span class="n">merge_df</span><span class="p">[</span><span class="s1">'cat'</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_df</span><span class="p">[</span><span class="s1">'cat'</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+<span class="c1">#Here we employ the NLTK. I learned how to write parts of this code using this sentdex page: https://pythonprogramming.net/wordnet-nltk-tutorial/</span>
+<span class="k">def</span> <span class="nf">syns</span><span class="p">(</span><span class="n">target_word</span><span class="p">):</span>
+    <span class="n">local_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1">#the synset will contain a set up lemmas</span>
+    <span class="k">for</span> <span class="n">syn</span> <span class="ow">in</span> <span class="n">wordnet</span><span class="o">.</span><span class="n">synsets</span><span class="p">(</span><span class="n">target_word</span><span class="p">):</span>
+        <span class="c1">#this appends the word contained in each lemma to the list</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">syn</span><span class="o">.</span><span class="n">lemmas</span><span class="p">():</span>
+            <span class="n">local_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+    
+    <span class="c1">#capturing words not included in the wordnet</span>
+    <span class="k">if</span> <span class="n">target_word</span><span class="o">==</span><span class="s1">'car'</span><span class="p">:</span>
+        <span class="n">local_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'motorcycle'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">target_word</span><span class="o">==</span><span class="s1">'medical'</span><span class="p">:</span>
+        <span class="n">local_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'dental'</span><span class="p">)</span>
+    
+    <span class="c1">#iterating through each row in the merge_df dataframe to add the captured words to the corresponding synonym</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">merge_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">merge_df</span><span class="p">[</span><span class="s1">'word'</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">local_list</span><span class="p">:</span>
+            <span class="n">merge_df</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="s1">'cat'</span><span class="p">,</span><span class="n">target_word</span><span class="p">)</span>
+
+<span class="c1">#capturing words and their synonyms for the following categories:            </span>
+<span class="n">syns</span><span class="p">(</span><span class="s1">'wedding'</span><span class="p">)</span>
+<span class="n">syns</span><span class="p">(</span><span class="s1">'home'</span><span class="p">)</span>
+<span class="n">syns</span><span class="p">(</span><span class="s1">'car'</span><span class="p">)</span>
+<span class="n">syns</span><span class="p">(</span><span class="s1">'medical'</span><span class="p">)</span>
+<span class="n">syns</span><span class="p">(</span><span class="s1">'vacation'</span><span class="p">)</span>
+<span class="n">syns</span><span class="p">(</span><span class="s1">'business'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [15]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#now that we've separated the words in the string, identified synonyms, and linked it back to the dataframe,</span>
+<span class="c1">#these are the categories to be used for our analysis</span>
+<span class="n">category_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"home"</span><span class="p">,</span> <span class="s2">"wedding"</span><span class="p">,</span> <span class="s2">"medical"</span><span class="p">,</span> <span class="s2">"business"</span><span class="p">,</span> <span class="s2">"car"</span><span class="p">,</span> <span class="s2">"vacation"</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [17]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#new dataframe containing only the data we have categorized for our analysis</span>
+<span class="n">cat</span> <span class="o">=</span> <span class="n">merge_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">merge_df</span><span class="p">[</span><span class="s1">'cat'</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">""</span><span class="p">]</span>
+<span class="n">cat</span><span class="p">[</span><span class="s1">'int_rate'</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+<span class="n">cat</span><span class="p">[</span><span class="s1">'dti'</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+<span class="n">cat</span><span class="p">[</span><span class="s1">'loan_amnt'</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+<span class="n">cat</span><span class="p">[</span><span class="s1">'loan_stat_num'</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[17]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>8        1
+16       1
+22       1
+47       1
+49       1
+54       0
+57       0
+59       0
+69       1
+73       1
+83       1
+96       1
+101      1
+102      0
+104      1
+109      1
+111      1
+123      1
+147      1
+151      1
+153      1
+157      1
+166      1
+176      1
+178      1
+181      1
+194      1
+196      0
+198      1
+200      1
+        ..
+18459    1
+18463    1
+18466    1
+18470    1
+18479    1
+18485    1
+18487    1
+18489    1
+18493    1
+18505    1
+18524    0
+18528    1
+18529    1
+18544    1
+18551    0
+18559    1
+18592    1
+18605    1
+18610    1
+18614    1
+18633    1
+18635    1
+18668    1
+18685    1
+18687    1
+18691    1
+18699    1
+18701    1
+18707    1
+18748    1
+Name: loan_stat_num, dtype: int64</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Logistic-Regression-Model-and-Function">Logistic Regression Model and Function<a class="anchor-link" href="#Logistic-Regression-Model-and-Function">¶</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [18]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">Loan_Function</span><span class="p">():</span>
+    <span class="n">goodAnswer</span><span class="o">=</span><span class="kc">False</span>
+    <span class="c1">#this while loop will continue until goodAnswer is true</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">goodAnswer</span><span class="o">!=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">Q1</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">"Please choose a loan category: home, wedding, medical, business, car, vacation:"</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">Q1</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">category_list</span><span class="p">:</span>
+            <span class="c1">#loop stops because user chose word in category list</span>
+            <span class="n">goodAnswer</span><span class="o">=</span><span class="kc">True</span>
+            <span class="c1">#makes the word lowercase</span>
+            <span class="n">Q1</span> <span class="o">=</span> <span class="n">Q1</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="c1">#makes a copy of the dataframe inside the function so that it does not modify the actual dataframe</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1">#subsets the dataframe based on whatever the user selected in the first question "Q1"</span>
+            <span class="n">df_cat</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">'cat'</span><span class="p">]</span> <span class="o">==</span> <span class="n">Q1</span><span class="p">]</span>
+            
+            <span class="c1">#separate testing and training data</span>
+            <span class="c1">#splits the data set using 70% for training and 30% for testing</span>
+            <span class="n">Train</span><span class="p">,</span> <span class="n">Test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">df_cat</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.30</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+            <span class="c1">#our independent variable is interest rate</span>
+            <span class="n">xTrain</span> <span class="o">=</span><span class="n">Train</span><span class="p">[[</span><span class="s2">"int_rate"</span><span class="p">,</span> <span class="s2">"dti"</span> <span class="p">,</span><span class="s2">"loan_amnt"</span><span class="p">]]</span>
+            <span class="n">xTest</span> <span class="o">=</span> <span class="n">Test</span><span class="p">[[</span><span class="s2">"int_rate"</span><span class="p">,</span> <span class="s2">"dti"</span> <span class="p">,</span><span class="s2">"loan_amnt"</span><span class="p">]]</span>
+            <span class="c1">#dependent variable is loan status binary variable created in the function above</span>
+            <span class="n">yTrain</span> <span class="o">=</span> <span class="n">Train</span><span class="p">[</span><span class="s2">"loan_stat_num"</span><span class="p">]</span>
+            <span class="n">yTest</span> <span class="o">=</span> <span class="n">Test</span><span class="p">[</span><span class="s2">"loan_stat_num"</span><span class="p">]</span>
+            <span class="n">yTrain</span> <span class="o">=</span> <span class="n">yTrain</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+            <span class="n">yTest</span>  <span class="o">=</span> <span class="n">yTest</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+            
+            <span class="c1">#build model</span>
+            <span class="c1">#we use logisitic regression because we are going to predict a binary outcome variable</span>
+            <span class="n">Model</span> <span class="o">=</span> <span class="n">LR</span><span class="p">(</span><span class="n">class_weight</span><span class="o">=</span><span class="s2">"balanced"</span><span class="p">)</span>
+            <span class="n">Model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">xTrain</span><span class="p">,</span> <span class="n">yTrain</span><span class="p">)</span>
+            <span class="n">yPredTest</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">xTest</span><span class="p">)</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">intercept_</span>
+
+            <span class="nb">print</span> <span class="p">(</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">yPredTest</span><span class="p">,</span> <span class="n">yTest</span><span class="p">))</span>
+            
+            <span class="c1">#this function will be useful below in the case the user does not input a number for interest rate</span>
+            <span class="k">def</span> <span class="nf">is_number</span><span class="p">(</span><span class="n">Q2</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="n">Q2</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            
+            <span class="n">Input</span> <span class="o">=</span> <span class="p">[]</span>
+            
+            <span class="n">Q2</span><span class="o">=</span><span class="s1">''</span>
+            <span class="c1">#this while loop will continue until is_number is true</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">is_number</span><span class="p">(</span><span class="n">Q2</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">Q2</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">"What is the interest rate of the loan? "</span><span class="p">)</span>
+                
+            <span class="n">Q3</span><span class="o">=</span><span class="s1">''</span>
+            <span class="c1">#this while loop will continue until is_number is true</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">is_number</span><span class="p">(</span><span class="n">Q3</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">Q3</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">"What is the dti for the loan? "</span><span class="p">)</span>
+                
+            <span class="n">Q4</span><span class="o">=</span><span class="s1">''</span>
+            <span class="c1">#this while loop will continue until is_number is true</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">is_number</span><span class="p">(</span><span class="n">Q4</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">Q4</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">"What is the loan amount for the loan? "</span><span class="p">)</span>
+            
+            <span class="c1">#to account for user entering decimal instead of integer</span>
+            <span class="n">int_rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Q2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">int_rate</span> <span class="o"><</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">int_rate</span> <span class="o">=</span>  <span class="n">int_rate</span><span class="o">*</span><span class="mi">100</span>
+            
+            <span class="n">dti</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Q3</span><span class="p">)</span>
+            <span class="n">loan_amnt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Q4</span><span class="p">)</span>
+            
+            <span class="n">Input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">int_rate</span><span class="p">)</span>
+            <span class="n">Input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dti</span><span class="p">)</span>
+            <span class="n">Input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loan_amnt</span><span class="p">)</span>
+            
+            <span class="n">my_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Input</span><span class="p">)</span>
+            <span class="n">my_arr</span> <span class="o">=</span> <span class="n">my_arr</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>            
+                        
+            <span class="c1">#Predicts the probability of success and failure given our model</span>
+            <span class="n">prediction</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">my_arr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">prediction</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="p">(</span><span class="s2">"We predict this loan will succeed"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">prediction</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="p">(</span><span class="s2">"We predict this loan will fail"</span><span class="p">)</span>
+            
+            <span class="n">X</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">my_arr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">prediction</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">For loans in the </span><span class="si">{0}</span><span class="s2"> category, at an interest rate of </span><span class="si">{1}</span><span class="s2">%, dti of </span><span class="si">{3}</span><span class="s2">, and loan amount of </span><span class="si">{4}</span><span class="s2">: </span><span class="se">\n</span><span class="s2">The loan will succeed with an accuracy rate of </span><span class="si">{2}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Q1</span><span class="p">,</span><span class="n">int_rate</span><span class="p">,</span><span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="n">dti</span><span class="p">,</span><span class="n">loan_amnt</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">prediction</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">For loans in the </span><span class="si">{0}</span><span class="s2"> category, at an interest rate of </span><span class="si">{1}</span><span class="s2">%, dti of </span><span class="si">{3}</span><span class="s2">, and loan amount of </span><span class="si">{4}</span><span class="s2">: </span><span class="se">\n</span><span class="s2">The loan will fail with an accuracy rate of </span><span class="si">{2}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Q1</span><span class="p">,</span><span class="n">int_rate</span><span class="p">,</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">dti</span><span class="p">,</span><span class="n">loan_amnt</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">"Not possible"</span><span class="p">)</span>
+            <span class="c1">#print ("For loans in the {0} category, at an interest rate of {1}%: \nthe probability of success is {2} \nand probability of failure is {3}".format(Q1,int_rate,X[:,0]))</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="s2">"That is not a possible category. Please check your spelling or choose again!"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Loan_Function</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [19]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#plotting our logisitic regression function using interest rate and all of our categorized data</span>
+
+            
+<span class="n">Train</span><span class="p">,</span> <span class="n">Test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.30</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">xTrain</span> <span class="o">=</span><span class="n">Train</span><span class="p">[[</span><span class="s2">"int_rate"</span><span class="p">]]</span>
+<span class="n">xTest</span> <span class="o">=</span> <span class="n">Test</span><span class="p">[[</span><span class="s2">"int_rate"</span><span class="p">]]</span>
+<span class="n">yTrain</span> <span class="o">=</span> <span class="n">Train</span><span class="p">[</span><span class="s2">"loan_stat_num"</span><span class="p">]</span>
+<span class="n">yTest</span> <span class="o">=</span> <span class="n">Test</span><span class="p">[</span><span class="s2">"loan_stat_num"</span><span class="p">]</span>
+<span class="n">yTrain</span> <span class="o">=</span> <span class="n">yTrain</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+<span class="n">yTest</span>  <span class="o">=</span> <span class="n">yTest</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+<span class="n">Model</span> <span class="o">=</span> <span class="n">LR</span><span class="p">(</span><span class="n">class_weight</span><span class="o">=</span><span class="s2">"balanced"</span><span class="p">)</span>
+<span class="n">Model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">xTrain</span><span class="p">,</span> <span class="n">yTrain</span><span class="p">)</span>
+<span class="n">yPredTest</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">xTest</span><span class="p">)</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">intercept_</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xTrain</span><span class="p">,</span> <span class="n">yTrain</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">X1</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">200</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="n">x</span><span class="o">+</span><span class="n">b</span><span class="p">)))))</span>
+    <span class="n">X1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">'Loan Success'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">'Interest Rate'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Loan Success and Interest Rate Function'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZIAAAEZCAYAAAC99aPhAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
+AAALEgAACxIB0t1+/AAAIABJREFUeJzt3Xm4XeP99/H3J5EYElRiSkJCjEVNrYihdVpKijQuYwRV
+WlUtP9rH2OEn2mpp+/TpXFVDlZgabVFCUKc1pUKjgkwEGcQcQiipfJ8/1n1kO9n7nJ3svc/ae5/P
+67rWtddw77W+a0/ffd/3GhQRmJmZraweeQdgZmaNzYnEzMwq4kRiZmYVcSIxM7OKOJGYmVlFnEjM
+zKwiTiRmHZB0rqQr847Dak/SbyR9M+84GpETSc4kPS3pUznHMErSFEmvSXpR0p2ShuQZU50perKV
+pL0kzS1nBZKGSFoqqcu/c+XEKelySe9IWiTpZUm3S9pqBbZR0edY0jOS3krbfyM9briy6ytje8dK
+uqdwXkScFBHn12qbzcyJpJuTtBlwBfC1iPgQsCnwK+C9XANrHOWe0atUViuzEUk9V+Z57bbdmQsj
+Yi1gEPAccEkF21xRARwQEWtFxJrp8fkabq/c18TK4ERSxySdIGlW+of4F0kDCpb9VNIcSa9Lmixp
+z4Jl50q6TtIV6Z/dVEk7l9jMjsDsiGgFiIjFEfHniJiX1nW5pO8UrPsD/24lbSTphlSTeUnSz9vF
+/0SK4TFJO6b5AySNT895StIpBc/ZJe3P65IWSPpxmr+qpCvTa7FQ0j8lrVfidTtL0pMF2z2oYNmx
+ku6R9CNJr6btjyhYvomk1rT924F1O3ufCp57t6TvSLo3bfs2Sf3S4r+nx9fSsl3Tc45Pr9ErkiZI
+GlywvqWSviJpJjAzzdta0sRUfpqkwwrK7y/p8bT+uZK+LmkN4FZgYLn/9CPiHeB6ss9G27qHSror
+vf4vSrpK0lpp2R+AwcDNaf2np/nDJd2X3q8pkvbq7CUs8pouV5sqrP109lkv9vmUtDXwG2C39Jq8
+msq2/6x39P1bKulESTPT5+iXnexbc4sIDzkOwNPAp4rM/xTwErAD0Av4OfD3guVjgA+R/Rn4GrAA
+6J2WnQu8BexH9uX8PvBAie1vmsr+BGgB+rRbfjnwnYLpvYA5abwH8AjwY2A1oDewe1p2GDAX2DlN
+DwU2TvE8BHwT6AlsAjwJfDqVux84Ko2vAQxL418CbgRWTevYCehbYp8OATYoiOPNguljgXeA49N6
+vgzML3ju/cCP0mv+cWAR8IcS23n/tUjTdwOzgM1SnHcD30/LhpDV8lRQfhRZgtgyvZbfAO4rWL4U
+uD29z6um12MO8LkU+w7pM7J1Kv9cweu/NrBjsThL7Mv77zPQB7gS+FfB8s2AvYFVgP5AK/CTdp/j
+TxZMDwReBvZL03un6f4r+D1YLvbCsnTwWafjz+exwD86eA06+/4tBW4C1iT7XL8I7Jv370leQ+4B
+dPehgy/QJcAFBdN9gHeBwSXW8yrwkTR+LjCxYNmHgcUdxDAMuBZ4IX0pLwfWSMs6SiS7pef0KLLO
+24BTSmzrmXbzzgYuTeN/T/H3b1fmOODetn1cwdd4CjAyjR8LzCxYtnr6UVg//SC8C6xesHwcK5ZI
+vlEwfRJwaxpvSyQ9CpbfChxXMN0DWAxsnKaXAnsVLD+88McszbsI+HYafwY4AVizozhL7MvlwNvp
+c/Qe8BSwXQflRwEPl/ocA2cCVxT5TBzTwfdgUdr+q8CfSsXO8omk6Ge9k89nZ4mkw+9fem92K1h+
+HXDmin42m2Vw01b9Ggg82zYREYuBV8jar5F0emoSWShpIbAWH2yGKWxffgtYTSU6eiPiwYgYHREb
+kP0L/wRZjaEzGwHPRsTSIss2Jvsxam8IMCg1B7yaYj+H7IccsprCVsD01Hx1QJp/Jdm/82slzZN0
+gUr0G0j6XGpKaXtttqXEaxMRb6fRvmSv+cKCeVDwHpSp/evet4OyQ4Cftb0WZO9vkN7jZF678sPb
+vXZjgA3S8kOAA4BnUzPb8BWM/UcR0S9t522y9wEASetLuia99q8BV9Fxs98Q4PB2se4BDOjgOaMi
+ol8aDl6BuEt91jv6fHamw+9f8kK77Xb0Xje1VfIOwEp6juzLCICkPmRNCvOV9YecQdaU8ERa/ior
+2ZFbKCIelvQnYLs0azFZk0qbwh+CucBgST2KfFnnkjWHtDeXrE+m6BFBEfEU2Y8jkg4Bxkvql37c
+vwt8N/UjTABmkP2LfF9adjHZa/NAmjeF8l6bBcA6klYvSCaDyf59ViqKzJsDfC8irinzeXOB1ojY
+r2jBiIeBg1KCPYWsn2NwiW2X3mDEPEmnAVdI+mtkfSbfJ3sdto2I1yWNAn5RIs62WP8QESeuwKaL
+vUcf+PylfSvaN1ZER5/Pzl6TUt+/eSWf0Y25RlIfeivrTG4begLXAMdJ2l7Sqixr+51D1i67BHhF
+Um9J/5vmdaToD6mkPSR9UanjOnVEfhZ4IBV5BNhf0jqpk/bUgqc/SPbje4GkNVLsu6dllwCnt3V8
+StpM0sbpOW9IOlPSapJ6StpW0sdSuaMktf3TfZ3sC79UUouk7dI/zTfT/hf7ge+T5r8sqYek41iW
+FDuUXtuHgPMk9UoJe2Q5zy3DSymuwuT6W+AbkrYBkLS2pEM7WMdfgS0lHS1plRTjx5R1wPeSNEbS
+WhHxHvAGy468ewHor9Q5Xo6IuBOYT9Y3Bdnn602y924Q2R+ZQs+T9YO1uQoYKWnf9D6spqzjfGC5
+MSQzyWoYn5G0CvAtsr6OjrR91jv6fL4AbCSpV4l1FPv+TYqIsg737m6cSOrDLWRV47fT47kRcRfw
+beBPZF/oTYEjU/nb0zCTrL34LbJ/Xx0p9Q/sNbLEMVXSIrJ2+xvIOpwha1J6lKz9/TayvpRshdm/
+vJHAFmT/rueSteMTEeOB84Gr03r/DPRLzzmQ7Iigp8k6KX9H1jQHMAJ4PD3n/wFHpH/EGwLjyZLL
+42T9EcudKBgR04D/C0wi+3HblqxvpdzX5ihgOFkzxrfJDo0uV8l/uamGcz5wX2rqGRYRfwEuIGuu
+e43sdR5R+LR263gT2BcYTfaP+bn0/LYf1mOAp9O6vpT2hYiYQfbDODttu9hRW8Vi/zFwZvqxPQ/4
+KNnn5Wayz0ihC4Bvp/V/PbKj/kaRHUDwElkz0emU/s0p+tpFxCLgK8ClZLWBN+i8VhDpuSU/n8Df
+yD5Hz0t6sch2i33/RncQ7wrV+pqNUkdRfgFIl5L9sLwQEdsXWT4GOCtNvgGcFBFTuzBEMzPrQD3U
+SC4nO3SvlNnAJyJiB+B7ZP9ezcysTuTe2R4R96qDy3FExKSCyUl88KgJMzPLWT3USFbEF8mO1jEz
+szqRe42kXJI+SXZS2p6dlTUzs67TEIlE0vZk5waMiIiFHZTr1kdOmJmtjIio6By0emnaEqXPcxhM
+dqjhMelktQ7lfamAWg3nnntu7jF4/7x/3r/mG6oh9xqJpKvJLhbYX9Icsmvn9AYiIi4mO5a7H/Br
+SQKWRMSwvOI1M7MPyj2RRMSYTpafQHYhOjMzq0P10rRlnWhpack7hJry/jU271/3lvuZ7dUkKZpp
+f8zMak0S0SSd7WZm1qCcSMzMrCJOJGZmVhEnEjMzq4gTiZmZVcSJxMzMKuJEYmZmFXEiMTOzijiR
+mJlZRZxIzMysIk4kZmZWEScSMzOriBOJmZlVxInEzMwq4kRiZmYVcSIxM7OKOJGYmVlFnEjMzKwi
+TiRmZlYRJxIzM6uIE4mZmVUk90Qi6VJJL0h6tIMyP5c0S9IjknbsyvjMzKxjuScS4HJgv1ILJX0G
+2CwitgBOBC7qqsDMqm3o0KFIWqFhzTXX5KWXXso7dLOSck8kEXEvsLCDIqOAP6Sy/wTWlrRBV8Rm
+Vk2SePrpp1f4eW+++Sbrr78+11xzTQ2iMqtc7omkDIOAuQXT89O8biMiG6xxDR06tOJ1jBkzxjUT
+q0ur5B1AtY0dO/b98ZaWFlpaWnKLpVqeeQYKf4ekbOjRY9l4+6Hay3r2hF69oHfv7LHUeOG81VeH
+vn1LD2uuCeuuC+utB6utltvL2yVWpiZSzDPPPMN6661XlXVZ99Ta2kpra2tV16mog7+6koYAN0fE
+9kWWXQTcHRHXpenpwF4R8UKRslEP+1MrbTWTwmHp0uLzq73svfdgyZJsePfd5ceLzXv7bVi8GN58
+s/jw+uvw8svZ0Lt3llDWWw/WXx8GD4ZNNlk2DB0K/fvn/AZUYOjQoVVJJi+++KITiVWVJCJClayj
+XmokSkMxNwFfBa6TNBx4rVgS6Q7aagfNJgLeeANeeikbXnwRnn02q4lNmpQ9PvUUrLoqfOQj2bDD
+DrD77rDFFo3xmsyePRtVGOjVV1/tJGJ1KfcaiaSrgRagP/ACcC7QG4iIuDiV+SUwAlgMHBcR/yqx
+rqaukXRnETB/Pkydmg2PPAL33gvvvAN77gl77QUjR8Kmm+YdacdWpmbSt29fZs+e7SRiNVGNGknu
+iaSanEi6nzlz4J574K674K9/hQED4KCD4KijYMst847OrP45kbTjRNK9vfde1hR2ww0wbhxstRWc
+cAIccUTWB2Nmy3MiaceJxNq8+25WQ/n1r2HmTDjjDPjiF7MjycxsmWokkkY4j8RshfXuDQcfDHfe
+CePHw9/+BptvDpdfnh2VZmbV4xqJdRsPPginnZbVVi65BHb0VdvMXCMxWxHDhsF998HJJ8O++8J5
+52Xnu5hZZVwjsW5p/nw4/vjspMnrr4cNN8w7IrN8uEZitpIGDYIJE2DvveFjH4MHHsg7IrPG5RqJ
+dXu33AKf/3zWEX/ggXlHY9a1XCMxq4IDDsgOFf7iF+GKK/KOxqzx1Mu1tsxyteuu0NqaNXX16gVj
+xuQdkVnjcCIxS7beGm6/HfbZB9ZYI7vUipl1zn0kZu08/DCMGAE33QS77ZZ3NGa15T4Ssxr46Efh
+97+HQw7JLgppZh1zIjEr4oAD4Otfh1Gj4K238o7GrL65acushAg4+mjo0wcuvjjvaMxqw01bZjUk
+wW9+k93rZPz4vKMxq1+ukZh14sEHs7svTp6c3UverJn4fiTtOJFYrXz/+/CPf2SXVWmEe8SblctN
+W2Zd5IwzYMECuPrqvCMxqz+ukZiV6cEH4bOfhcceg3XXzTsas+pw01Y7TiRWa6edBosWwWWX5R2J
+WXU4kbTjRGK1tmgRbLVVdsXgnXfOOxqzyrmPxKyLrbVWdmfFr30tO8/EzOogkUgaIWm6pJmSziqy
+fC1JN0l6RNJUSZ/PIUyz933hC7BwIfzlL3lHYlYfcm3aktQDmAnsDTwHTAZGR8T0gjLnAGtFxDmS
+1gVmABtExH+LrM9NW9Yl7rwTTjoJpk2DVXwNbWtgzdC0NQyYFRHPRsQS4FpgVLsyAayZxtcEXimW
+RMy60j77ZCcnXnll3pGY5S/vRDIImFswPS/NK/RLYBtJzwH/Bk7totjMOnTeefDd78KSJXlHYpav
+RqiU7wdMiYhPSdoMuEPS9hHxZrHCY8eOfX+8paWFlpaWLgnSup8994TNN88uOX/CCXlHY1ae1tZW
+Wltbq7rOvPtIhgNjI2JEmj4biIi4sKDMX4EfRMR9afou4KyIeKjI+txHYl3qgQdg9GiYNQt69847
+GrMV1wx9JJOBzSUNkdQbGA3c1K7Ms8A+AJI2ALYEZndplGYl7LZbdl7JNdfkHYlZfnI/IVHSCOBn
+ZEnt0oi4QNKJZDWTiyUNAH4PDEhP+UFEFP3aukZiebjjjuy8kqlTfUFHazw+s70dJxLLQwTstFN2
+heD99887GrMV0wxNW2YNT4LTT4cf/SjvSMzy4URiVgVHHAFPPQUPLXcIiFnzcyIxq4JeveDkk+EX
+v8g7ErOu5z4Ssyp5+eXsvJInn/T9SqxxuI/ErI6suy4cdBBcemnekZh1LddIzKpo8mQ4/PCsVtKz
+Z97RmHXONRKzOrPLLrDeejBhQt6RmHUdJxKzKjvpJLjooryjMOs6btoyq7I334SNN4bHH4eBA/OO
+xqxjbtoyq0N9+8Ihh/heJdZ9OJGY1cDxx8Pll/u+7tY9dJpIJJ2a7psuSZdK+pekfbsiOLNGtdtu
+2eMDD+Qbh1lXKKdGcnxELAL2BdYBjgEuqGlUZg1Oymoll12WdyRmtVdOImnrhNkfuDIiHi+YZ2Yl
+HHMM3HADLF6cdyRmtVVOInlY0kSyRHK7pDWBpbUNy6zxDRiQ3Y73hhvyjsSstjo9/FdSD2BHYHZE
+vCapH7BRRDzaFQGuCB/+a/XmuuuyTvfbbss7ErPiuuTGVpL2AB6JiMWSjgZ2Bn4WEc9WsuFacCKx
+evPWW9m5JDNmwAYb5B2N2fK66jyS3wBvSdoB+D/AU8AfKtmoWXexxhowciT88Y95R2JWO+Ukkv+m
+v/mjgF9GxK+ANWsbllnzGDMGrr467yjMaqecRPKGpHPIDvu9JfWZ9KptWGbNY599sqsBz56ddyRm
+tVFOIjkCeIfsfJLngY0A353arEy9esFhh8G11+YdiVltdJpIUvK4AVg1zXoZ+HMtgzJrNm7esmZW
+ziVSTgDGA79NswYBf6llUGbNZrfd4I03YOrUvCMxq75ymra+CuwBLAKIiFnA+tUKQNIISdMlzZR0
+VokyLZKmSHpM0t3V2rZZV+nRA448EsaNyzsSs+orJ5G8ExHvtk1IWgWoyskaqeP+l8B+wLbAkZK2
+bldmbeBXwIERsR1wWDW2bdbVRo+G66/3FYGt+ZSTSP4u6RvA6pI+DfwRuLlK2x8GzIqIZyNiCXAt
+2WHGhcYAN0TEfICIeLlK2zbrUjvskN3HfcqUvCMxq65yEsnZwEvAVOBE4FbgW1Xa/iBgbsH0vDSv
+0JZAP0l3S5os6ZgqbdusS0lw6KEwfnzekZhV1ypllFkduCwifgcgqWea91YtAyuwCtllWT4F9AEe
+kPRARDxZrPDYsWPfH29paaGlpaULQjQrz6GHZk1c55+fJRazrtba2kpra2tV11nOtbYmAftExJtp
+ui8wMSJ2r3jj0nBgbESMSNNnAxERFxaUOQtYLSLOS9OXABMiYrlrqvpaW1bvImDoUPjLX7KmLrO8
+ddW1tlZrSyIAaXyNSjZaYDKwuaQhknoDo4Gb2pW5EdhTUk9JawC7AtOqtH2zLuXmLWtG5SSSxZJ2
+bpuQ9FHg7WpsPCLeA04GJgKPA9dGxDRJJ0r6UiozHbgdeBSYBFwcEU9UY/tmeTjssOwijq48W7Mo
+p2lrF7KjqZ4juzPihsAREfFw7cNbMW7askYQAUOGwIQJsO22eUdj3V01mrY67WyPiMnp3I6t0qwZ
+6VBdM1sJbc1bf/yjE4k1h3IukfJVoE9EPBYRjwF9JX2l9qGZNS/3k1gzKaeP5ISIeK1tIiIWAifU
+LiSz5jd8OCxcCNN82Ig1gXISSU9p2RHv6TyS3rULyaz59egBhxziWok1h3ISyW3AdZL2lrQ3cE2a
+Z2YVOPRQuGG5s6HMGk85R231ILs0yt5p1h3AJenQ3brio7askbz3HgwaBPfdB5ttlnc01l1V46it
+ThNJI3EisUbz5S9nZ7qfeWbekVh31SVntkt6WtLs9kMlGzWzzCGHuHnLGl85F238WMH4amT3A+lX
+m3DMupeWFnjqKZgzBwYPzjsas5VTzj3bXykY5kfET4EDuiA2s6bXqxeMHAl/+lPekZitvHKatnYu
+GD4m6cuUV5MxszK4ecsaXTlHbRXeI/2/wDPAjyNiRg3jWinubLdG9M47sMEGMH06bLhh3tFYd+Oj
+ttpxIrFGNWYMfPzjcNJJeUdi3U1Nj9qSNFLSkILp/5X0b0k3Sdq0ko2a2Qe5ecsaWckaiaRHgeER
+8ZakA4GfAEcCOwGHRcR+XRdmeVwjsUa1eDEMHAizZ0P//nlHY91Jrc8jiYhouy/7wcClEfFwRFwC
+rFfJRs3sg/r0gU9/Gm68Me9IzFZcR4lEkvqmS6TsDdxVsGy12oZl1v24ecsaVUeJ5KfAI8BDwLSI
+eAhA0k7Agi6IzaxbOeAAuOceeP31vCMxWzEdHrUlaRCwPvDviFia5g0AekXEnK4JsXzuI7FGN3Ik
+jB4NRx2VdyTWXdT8WlvpTPYpbUkkzVtQj0nErBm4ecsakc8jMasjr74Km2wCzz0HffvmHY11B11y
+9V8z6zr9+mW34Z0wIe9IzMpXViKR1FPSQEmD24ZaB2bWXbl5yxpNORdtPAV4gezOiLek4a/VCkDS
+CEnTJc2UdFYH5XaRtETSwdXatlk9OugguO02+M9/8o7ErDzl1EhOBbaKiG0j4iNp2L4aG0/nqPwS
+2A/YFjhS0tYlyl0A3F6N7ZrVsw02gB12gIkT847ErDzlJJK5QK2ObB8GzIqIZyNiCXAtMKpIuVOA
+8cCLNYrDrK64ecsaSTn3FZkNtEq6BXinbWZE/KQK2x9ElqjazCNLLu+TNBA4KCI+KekDy8ya1cEH
+w3nnwbvvQu/eeUdj1rFyEsmcNPROQ1f7KVDYd9LhYWpjx459f7ylpYWWlpaaBGVWSxttBFtuCXff
+DfvV3eVRrZG1trbS2tpa1XXmeh6JpOHA2IgYkabPJrtY5IUFZWa3jQLrAouBL0XETUXW5/NIrGn8
++McwcyZcfHHekVgz65IbW0laDziTrDP8/Ys1RsSnKtlwWndPYAbZRSEXAA8CR0bEtBLlLwdujoii
+d7h2IrFm8vTTsOuusGAB9OyZdzTWrLrqhMRxwHRgU+A8slvtTq5ko20i4j3gZGAi8DhwbURMk3Si
+pC8Ve0o1tmvWCDbdNGviuueevCMx61g5NZKHI+Kjkh5tO+xX0uSI2KVLIlwBrpFYs/n+92HePPj1
+r/OOxJpVV9VIlqTHBZIOSJeR71fJRs2sPKNHw/jxsGRJ52XN8lJOIvmepLWB/wOcDlwCfK2mUZkZ
+AEOHwuabwx135B2JWWm++q9ZnfvVr+D++2HcuLwjsWbUVUdtbQT8AtiTrLP7HuDUiJhXyYZrwYnE
+mtGLL2bnlMyb50vLW/V1VR/J5cBNwABgIHBzmmdmXWD99WH33eHGG/OOxKy4chLJehFxeUT8Nw2/
+B9arcVxmVuCoo9y0ZfWrnETyiqSj0z1Jeko6Gnil1oGZ2TKjRmX9JC+9lHckZssrJ5EcDxwOPE92
+9vmhwOdrGJOZtdO3LxxwAFx/fd6RmC2v00SSLvH+2YhYLyLWj4iDgEO6IDYzK+DmLatXK3X4r6Q5
+EVF3t9v1UVvWzJYsgcGDsysCb73c7d/MVk5XHbVVdNuVbNTMVlyvXvC5z8Fll+UdidkHuUZi1kBm
+zIC99oK5c7PEYlapmtZIJL0haVGR4Q2y80nMrItttRVssQXcckvekZgtUzKRRMSaEbFWkWHNiCjn
+zopmVgNf+AJcemneUZgt42ttmTWYxYth443hscdgoNsGrEJ5drabWU769IFDD4Urrsg7ErOMayRm
+DWjyZDjsMHjqKd+G1yrjGolZN7XLLjBgANx8c96RmDmRmDWsU06BX/wi7yjM3LRl1rDefRc22QQm
+ToTttss7GmtUbtoy68Z694Yvf9m1EsufayRmDez55+HDH8463fv1yzsaa0SukZh1cxtuCAceCBdf
+nHck1p3lnkgkjZA0XdJMSWcVWT5G0r/TcK+kj+QRp1m9OuMM+NnP4O23847EuqtcE4mkHsAvgf2A
+bYEjJbW/QPZs4BMRsQPwPeB3XRulWX3bfnv42Mfg8svzjsS6q7xrJMOAWenmWUuAa4FRhQUiYlJE
+vJ4mJwGDujhGs7r3jW/AD3+Y3bPErKvlnUgGAXMLpufRcaL4IjChphGZNaDddoNNN4Vrrsk7EuuO
+GuYqvpI+CRwH7NlRubFjx74/3tLSQktLS03jMqsX3/wmfOUrcOSRvleJldba2kpra2tV15nr4b+S
+hgNjI2JEmj4biIi4sF257YEbgBER8VQH6/Phv9ZtRcDee2eJ5IQT8o7GGkU1Dv/NO5H0BGYAewML
+gAeBIyNiWkGZwcBdwDERMamT9TmRWLf2z39mVwaeORNWXz3vaKwRNPx5JBHxHnAyMBF4HLg2IqZJ
+OlHSl1KxbwP9gF9LmiLpwZzCNat7u+6aXdDxV7/KOxLrTnxmu1mTeeIJaGmBadOgf/+8o7F61/BN
+W9XmRGKWOeUU+O9/4Te/yTsSq3dOJO04kZhlFi7MrsF1662w8855R2P1rOH7SMysNtZZB84/H04+
+GZYuzTsaa3ZOJGZN6rjjskOCL7oo70is2blpy6yJTZ8Oe+4JDz4IQ4fmHY3VIzdtmVmHtt4azjkH
+jj/eTVxWO04kZk3utNOyI7h+8pO8I7Fm5aYts27g2Wdh2DC44YasqcusjZu2zKwsQ4Zk9ys58kh4
+8cW8o7Fm40Ri1k3svz8ce2x2La533sk7Gmsmbtoy60aWLoUjjoCePeHqq6GH/0p2e27aMrMV0qMH
+XHklzJsHZ56ZnWdiViknErNuZrXV4MYbYeLE7GZYTiZWqYa5Q6KZVU///vC3v8E++2SHBl94Iaii
+xg3rztxHYtaNvfIKjBgB22wDF18Mq66ad0TW1dxHYmYV6d8fWlth0SLYd194+eW8I7JG5ERi1s31
+6ZOdqLjHHrDTTlliMVsRbtoys/fdfnt21eDPfQ7OPdf3fe8O3LRlZlW1334wZQo88wxstx1MmOCj
+uqxzrpGYWVETJsCpp8KgQfCDH8Dw4XlHZLXgGomZ1cxnPgNPPAFHHw2HH54d3TVhgi9Hb8tzjcTM
+OvWf/8C118LPfw5vvpnd32T0aNhkk7wjs0pVo0biRGJmZYuA++/PLrMyfjxsuSWMHJnVVnbYwdfu
+akRNkUgkjQB+StbMdmlEXFikzM+BzwCLgc9HxCMl1uVEYtZF3n0X7roLbr01O9rr9dehpSW778mw
+YbDzztmhxVbfGj6RSOoBzAT2Bp4DJgOjI2J6QZnPACdHxAGSdgV+FhFFu/2cSKzejRs3jjPOOIPn
+n3+ecj6rffv25aKLLuKoo47qgugq8/TTcO+92f3hJ0+GqVNh441hq62WDVtuCRttBAMH+iz6etEM
+iWQ4cG7d/oevAAAJ+0lEQVREfCZNnw1EYa1E0kXA3RFxXZqeBrRExAtF1udEYnVr4403Zt68eSv9
+3Dlz5lQ5otp691148kmYPh1mzMgeZ82C+fNhwQL40IeyI8IGDszOsO/Xb9mwzjrZ0LcvrLHGsqFP
+n+xx9dXdjFYt1UgkeV+0cRAwt2B6HjCskzLz07zlEolZvRo3btxKJxGAuXPnMm7cuIaombTp3Tu7
+htc22yy/bOnS7E6N8+fDc8/Bq68uG6ZNyx4XLoTFi+Gtt5Yf3n47q9Gsuir06gWrrJI9djTeq1eW
+fNoG6YPTpeYddFB2MzArLe9EUnVjx459f7ylpYWWlpbcYjFrc/3111dlHY2USDrSowdsuGE2fPSj
+K/78iCyZvPNOdvXiJUuyoXC82HRElsTahvbTxeZtvnn19z9Pra2ttFb5Ojj10LQ1NiJGpOlymram
+A3u5acsaybhx4zj66KMrWsdVV13VNInE6kcz9JH0BGaQdbYvAB4EjoyIaQVl9ge+mjrbhwM/dWe7
+NaLBgwczd+7czgsW0Yh9JNYYGv7M9oh4DzgZmAg8DlwbEdMknSjpS6nMrcDTkp4Efgt8JbeAzSow
+Z84crrrqKgYMGIDKvItU3759ueqqq5xErK7lfh5JNblGYma2Yhq+RmJmZo3PicTMzCriRGJmZhVx
+IjEzs4o4kZiZWUWcSMzMrCJOJGZmVhEnEjMzq4gTiZmZVcSJxMzMKuJEYmZmFXEiMTOzijiRmJlZ
+RZxIzMysIk4kZmZWEScSMzOriBOJmZlVxInEzMwq4kRiZmYVcSIxM7OKOJGYmVlFnEjMzKwiuSUS
+SetImihphqTbJa1dpMxGkv4m6XFJUyX9Tx6xmplZaXnWSM4G7oyIrYC/AecUKfNf4OsRsS2wG/BV
+SVt3YYx1o7W1Ne8Qasr719i8f91bnolkFHBFGr8COKh9gYh4PiIeSeNvAtOAQV0WYR1p9g+y96+x
+ef+6tzwTyfoR8QJkCQNYv6PCkjYBdgT+WfPIzMysbKvUcuWS7gA2KJwFBPCtIsWjg/X0BcYDp6aa
+iZmZ1QlFlPz9ru2GpWlAS0S8IGlD4O6I+HCRcqsAfwUmRMTPOllnPjtjZtbAIkKVPL+mNZJO3AR8
+HrgQOBa4sUS5y4AnOksiUPmLYWZmKy7PGkk/4HpgY+BZ4PCIeE3SAOB3EXGgpD2AfwBTyZq+AvhG
+RNyWS9BmZrac3BKJmZk1h4Y8s13SdyT9W9IUSbelPpa2ZedImiVpmqR9C+bvLOlRSTMl/TSfyMsj
+6Ycp/kck3SBprYJlzbB/h0p6TNJ7knZut6zh96+QpBGSpqe4z8o7npUh6VJJL0h6tGBeyROKS72H
+9arUic/Nso+SVpX0z/R7OVXSuWl+9fYvIhpuAPoWjJ8C/CaNbwNMIev72QR4kmW1rn8Cu6TxW4H9
+8t6PDvZvH6BHGr8A+EGT7d9WwBZkJ6LuXDD/w82wfwX70yPtwxCgF/AIsHXeca3EfuxJduj9owXz
+LgTOTONnARek8ZKf0XodgA2BHdN4X2AGsHWT7eMa6bEnMAkYVs39a8gaSXzwEOA+wNI0/lng2oj4
+b0Q8A8wChqUay5oRMTmV+wNFToCsFxFxZ0S07dMkYKM03iz7NyMiZpEdDl5oFE2wfwWGAbMi4tmI
+WAJcS7aPDSUi7gUWtptd6oTiop/RrohzZUXxE583orn28a00uipZggiquH8NmUgAJH1P0hxgDPC/
+afYgYG5Bsflp3iBgXsH8eTTOGfLHk/0Dh+bcv0LNtn/t96dR4i5HqROKS72HDaHgxOdJwAbNso+S
+ekiaAjwP3JH+lFVt//I8/LdDHZzM+M2IuDkivgV8K7U7nwKM7fooV15n+5fKfBNYEhHX5BBiRcrZ
+P2sqDX/UTvsTn4ucl9aw+5haOHZK/a1/lrQty+/PSu9f3SaSiPh0mUWvBm4hSyTzyQ4nbrNRmldq
+fm462z9Jnwf2Bz5VMLtp9q+Ehtm/Ms0HBhdMN0rc5XhB0gax7ITiF9P8hnyv0onP44ErI6LtnLam
+2keAiFgkqRUYQRX3ryGbtiRtXjB5EDA9jd8EjJbUW9KmwObAg6na9rqkYZIEfI7SJ0DmTtII4Azg
+sxHxTsGipti/dgr7SZpt/yYDm0saIqk3MJpsHxuRWP69+nwaLzyhuOh72FVBVqDYic9NsY+S1m07
+IkvS6sCnyfqBqrd/eR9NsJJHIIwHHiU7CuZGYEDBsnPIjjKYBuxbMP+jZCc2zgJ+lvc+dLJ/s8hO
+0vxXGn7dZPt3EFkb7NvAArLL3zTN/rXb1xFkRwHNAs7OO56V3IergeeAd4A5wHHAOsCdad8mAh/q
+7D2s1wHYA3gv/Z5MSd+5EUC/ZthH4CNpnx5Jv5vfTPOrtn8+IdHMzCrSkE1bZmZWP5xIzMysIk4k
+ZmZWEScSMzOriBOJmZlVxInEzMwq4kRi3YakN8ooc6qk1Wocxw6SPlNi2V6SXpP0L0lPSPpRJesz
+6wpOJNadlHPS1GnAGiuyUkkr+j3akezyN6X8IyJ2BnYGDpS0W4XrM6spJxLrdtK//rsl/THduOfK
+NP8UYCBwt6S70rx9Jd0v6SFJ10laI81/WtIFkh4CDpU0VNIESZMl/V3SlqncYelmQlMktUrqBXwH
+ODzVOg4rFWdE/IfsbORBaV27pFgelnSvpC2KrU/SGspuRjUplR1ZsxfTDBrzEikePKzMACxKj3uR
+3V9jANn1o+4Hdk/LZgPrpPH+wN+B1dP0mcC30vjTwOkF674T2CyNDwPuSuOPki7hA6yVHo8Ffl4i
+xr2Am9L4OmTX61o/Tfdl2Q3P9gbGF1sfcD4wJo2vTXYJjNXzfv09NO9Qt1f/NauxByNiAYCkR8ju
+BHc/H7w44XCyu8Xdly4W2SuVaXNden4fYHfgj6kcqSzAfcAVkq4H/lRmbJ9I947YAvhpRLRdlfVD
+wB8kbUHWTFfq+7svMFLSGWm6N9lViGeUuX2zFeJEYt1V4VWV36P4d0HAxIg4qsQ6FqfHHsDCyPo1
+PiAiTpK0C3Ag8LDa3aO+hH9ExGfTTZYmSbo+Ih4Fvgv8LSIOljQEuLuDdRwS2V0ozWrOfSTWnbS/
+tW8xi4C10vgkYA9JmwGkvoct2j8hIt4AnpZ06PsbkrZPj0MjYnJEnEt2v4eNgTcKtlFSZLc5/QFw
+dpq1NsvuC3FcQdH267sd+J+CWHbsbFtmlXAise6k1FFbhfN/B9wm6a6IeJnsB/saSf8ma9baqsS6
+jgK+IOkRSY+R3fca4EeSHpX0KHB/qlncDWzTWWd78lvg45IGAz8ELpD0MB/87rZf33eBXmm7U8k6
+481qxpeRNzOzirhGYmZmFXEiMTOzijiRmJlZRZxIzMysIk4kZmZWEScSMzOriBOJmZlVxInEzMwq
+8v8B4zZDZMqgJzwAAAAASUVORK5CYII=
+" />
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="SVM-Model-and-Function">SVM Model and Function<a class="anchor-link" href="#SVM-Model-and-Function">¶</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [20]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Building a SVM Model</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [21]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Data10</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"loan_stat_num"</span><span class="p">]</span><span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">Data10</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[21]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>(328, 34)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [22]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Data20</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"loan_stat_num"</span><span class="p">]</span><span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">Data20</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[22]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>(1592, 34)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [23]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">datasets</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">svm</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="k">import</span> <span class="n">train_test_split</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">metrics</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [24]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">frames</span> <span class="o">=</span> <span class="p">[</span><span class="n">Data10</span><span class="p">,</span> <span class="n">Data20</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [25]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Data4</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [26]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Data5</span> <span class="o">=</span> <span class="n">Data4</span><span class="p">[[</span><span class="s2">"int_rate"</span><span class="p">,</span><span class="s2">"loan_amnt"</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [27]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Data6</span> <span class="o">=</span> <span class="n">Data4</span><span class="p">[</span><span class="s2">"loan_stat_num"</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [28]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Data5</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[28]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>(1920, 2)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [29]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">xTrain</span><span class="p">,</span> <span class="n">xTest</span><span class="p">,</span> <span class="n">yTrain</span><span class="p">,</span> <span class="n">yTest</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">Data5</span><span class="p">,</span> <span class="n">Data6</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.30</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [30]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">svm_model2</span> <span class="o">=</span> <span class="n">svm</span><span class="o">.</span><span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s1">'rbf'</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s1">'balanced'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [31]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">svm_model2</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">xTrain</span><span class="p">,</span> <span class="n">yTrain</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[31]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>SVC(C=16, cache_size=200, class_weight='balanced', coef0=0.0,
+  decision_function_shape=None, degree=3, gamma=0.05, kernel='rbf',
+  max_iter=-1, probability=False, random_state=None, shrinking=True,
+  tol=0.001, verbose=False)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [32]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">svm_ypred2</span> <span class="o">=</span> <span class="n">svm_model2</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">xTest</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [33]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">yTest</span><span class="p">,</span> <span class="n">svm_ypred2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[[ 37  54]
+ [166 319]]
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xTrain</span><span class="o">.</span><span class="n">ix</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xTrain</span><span class="o">.</span><span class="n">ix</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span> <span class="o">=</span> <span class="n">yTrain</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">smoothness</span> <span class="o">=</span> <span class="o">.</span><span class="mi">2</span>
+<span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">xTrain</span><span class="o">.</span><span class="n">ix</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">10</span><span class="p">,</span> <span class="n">xTrain</span><span class="o">.</span><span class="n">ix</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">10</span>
+<span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">xTrain</span><span class="o">.</span><span class="n">ix</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">10</span><span class="p">,</span> <span class="n">xTrain</span><span class="o">.</span><span class="n">ix</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">10</span>
+<span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">smoothness</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="n">smoothness</span><span class="p">))</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">svm_model2</span><span class="o">.</span><span class="n">decision_function</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">xx</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">yy</span><span class="o">.</span><span class="n">ravel</span><span class="p">()])</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: 'center'," +
+        "    displayIndent: '0em'," +
+        "    showMathMenu: true," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['$','$'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+        "    } " +
+        "}); ";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+
+            <a href="#" class="go-top">Go Top</a>
+<footer class="footer">
+    <p>&copy; Elizabeth Rychlinski &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+    </div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+
+</body>
+</html>
